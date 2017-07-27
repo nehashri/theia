@@ -6,9 +6,6 @@
     "@theia/core": "^0.1.0",
     "@theia/filesystem": "^0.1.0"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "theiaExtensions": [
     {
       "frontend": "lib/browser/workspace-frontend-module",
