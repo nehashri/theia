@@ -5,8 +5,7 @@
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import * as process from 'process';
-import * as cp from 'child_process';
+import * as npm from 'npm';
 import BaseGenerator = require('yeoman-generator');
 
 import { Model } from "./generator-model";
@@ -24,10 +23,14 @@ export abstract class AbstractAppGenerator extends BaseGenerator {
         Object.assign(this.model.config, this.config.getAll());
     }
 
-    configuring(): void {
+    configuring(): Promise<void> {
         this.config.save();
-        this.model.readExtensionPackages({
-            read: (extension, version) => this.info(`${extension}@${version}`),
+        return this.model.readExtensionPackages({
+            read: (extension, version) =>
+                this.view(`${extension}@${version}`).then(result =>
+                    result[version]
+                )
+            ,
             readLocal: (extension, path) => {
                 for (const packagePath of ['package.json', 'extension.package.json']) {
                     const extensionPackagePath = this.destinationPath(path, packagePath);
@@ -40,21 +43,29 @@ export abstract class AbstractAppGenerator extends BaseGenerator {
         });
     }
 
-    protected version(pck: string): string | undefined {
-        return this.info(pck, 'version');
+    protected version(pck: string): Promise<string | undefined> {
+        return this.view(pck + '@latest').then(result => {
+            const versions = Object.keys(result);
+            return versions.length > 0 ? versions[0] : undefined;
+        });
     }
 
-    protected info(pck: string, ...viewArgs: string[]): any | undefined {
-        const raw = ['npm', 'view', pck, '--json', ...viewArgs];
-        const args = process.platform === 'win32' ? ['cmd', '/c', ...raw] : raw;
-        try {
-            return JSON.parse(cp.execSync(args.join(' '), {
-                encoding: 'utf8'
-            }));
-        } catch (e) {
-            console.error(e);
-            return undefined;
-        }
+    protected view(pck: string, ...args: string[]): Promise<{ [version: string]: any | undefined }> {
+        return new Promise(resolve =>
+            npm.load(err => {
+                if (err) {
+                    console.error(err);
+                    resolve({});
+                } else {
+                    npm.commands.view([pck, ...args], (err, result) => {
+                        if (err) {
+                            console.error(err);
+                        }
+                        resolve(result || {});
+                    });
+                }
+            })
+        );
     }
 
     writing(): void {

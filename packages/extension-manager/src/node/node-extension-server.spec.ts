@@ -9,11 +9,13 @@ import * as path from 'path';
 import * as assert from 'assert';
 import { NodeExtensionServer } from './node-extension-server';
 
+beforeEach(function () {
+    this.timeout(4000);
+});
+
 describe("NodeExtensionServer", () => {
 
-    it("list", function () {
-        this.timeout(4000);
-
+    it("list", () => {
         const server = new NodeExtensionServer(path.resolve(__dirname, '..', '..', 'testdata', 'list'));
         return server.list().then(extensions => {
             assert.deepEqual(extensions, [

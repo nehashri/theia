@@ -6156,8 +6156,8 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
 
 selenium-standalone@^6.0.0, selenium-standalone@^6.2.0:
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/selenium-standalone/-/selenium-standalone-6.5.0.tgz#5ecaffdcb15799fe69954e6143791a38bf88dfd1"
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/selenium-standalone/-/selenium-standalone-6.6.0.tgz#00973b979732a54fa2662afd8be3fb06cb6004f1"
   dependencies:
     async "^2.1.4"
     commander "^2.9.0"

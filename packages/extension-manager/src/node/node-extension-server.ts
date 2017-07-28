@@ -12,6 +12,8 @@ import { ExtensionServer, Extension, ExtensionIdentifier, ExtensionClient, Resol
 
 export class NodeExtensionServer extends AbstractAppGenerator implements ExtensionServer {
 
+    protected readonly ready: Promise<void>;
+
     constructor(projectPath: string) {
         super([], {
             env: {
@@ -20,25 +22,27 @@ export class NodeExtensionServer extends AbstractAppGenerator implements Extensi
             resolved: generatorTheiaPath
         });
         this.initializing();
-        this.configuring();
+        this.ready = this.configuring();
     }
 
-    list(query?: string | undefined): Promise<Extension[]> {
-        return Promise.resolve(
-            this.model.extensionPackages.map(pck =>
-                this.toExtension(pck)
-            )
-        );
+    async list(query?: string | undefined): Promise<Extension[]> {
+        await this.ready;
+        const extensions = [];
+        for (const pck of this.model.extensionPackages) {
+            const extension = await this.toExtension(pck);
+            extensions.push(extension);
+        }
+        return extensions;
     }
 
-    protected toExtension(pck: ExtensionPackage): Extension {
+    protected async toExtension(pck: ExtensionPackage): Promise<Extension> {
         return {
             name: pck.name,
             version: pck.version || '',
             description: pck.description || '',
             author: this.getAuthor(pck),
             installed: this.isInstalled(pck),
-            outdated: this.isOutdated(pck)
+            outdated: await this.isOutdated(pck)
         }
     }
 
@@ -57,12 +61,12 @@ export class NodeExtensionServer extends AbstractAppGenerator implements Extensi
         return !!targetDependencies && pck.name in targetDependencies;
     }
 
-    protected isOutdated(pck: ExtensionPackage): boolean {
+    protected async isOutdated(pck: ExtensionPackage): Promise<boolean> {
         if (!this.isInstalled(pck)) {
             return false;
         }
         const targetVersion = this.model.targetPck.dependencies![pck.name];
-        const version = this.version(pck.name);
+        const version = await this.version(pck.name);
         return !!version && semver.gt(version, targetVersion);
     }
 
