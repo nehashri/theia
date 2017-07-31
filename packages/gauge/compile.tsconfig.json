@@ -1,0 +1,14 @@
+{
+  "extends": "../base.tsconfig",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "include": [
+    "src"
+  ],
+  "files": [
+    "../../node_modules/monaco-editor-core/monaco.d.ts"
+  ]
+
+}

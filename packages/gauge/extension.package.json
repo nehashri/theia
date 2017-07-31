@@ -1,0 +1,22 @@
+{
+  "name": "@theia/gauge",
+  "version": "0.1.0",
+  "description": "Theia - Gauge Extension",
+  "dependencies": {
+    "@theia/core": "^0.1.0",
+    "@theia/languages": "^0.1.0",
+    "@theia/filesystem": "^0.1.0",
+    "@theia/workspace": "^0.1.0",
+    "@theia/navigator": "^0.1.0",
+    "@theia/monaco": "^0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/gauge-frontend-module",
+      "backend": "lib/node/gauge-backend-module"
+    }
+  ]
+}
