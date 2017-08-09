@@ -1,8 +1,8 @@
-import {ContainerModule} from "inversify";
-import {LanguageClientContribution} from "@theia/languages/lib/browser";
+import { ContainerModule } from "inversify";
+import { LanguageClientContribution } from "@theia/languages/lib/browser";
 import { CommandContribution, MenuContribution } from '@theia/core/lib/common';
-import {GaugeClientContribution} from "./gauge-client-contribution";
-import {SpecFrontendContribution} from "./spec-frontend-contribution";
+import { GaugeClientContribution } from "./gauge-client-contribution";
+import { SpecFrontendContribution } from "./spec-frontend-contribution";
 
 import "./monaco-contribution";
 

@@ -1,4 +1,4 @@
-import {inject, injectable} from "inversify"
+import { inject, injectable } from "inversify"
 import {
     Command,
     CommandContribution,
@@ -7,11 +7,11 @@ import {
     MenuModelRegistry,
     SelectionService,
 } from '@theia/core/lib/common';
-import {FrontendApplication, OpenerService, SingleTextInputDialog} from '@theia/core/lib/browser';
+import { FrontendApplication, OpenerService, SingleTextInputDialog } from '@theia/core/lib/browser';
 import { FileMenus } from '@theia/filesystem/lib/browser/filesystem-commands';
-import {FileStat, FileSystem, UriSelection} from "@theia/filesystem/lib/common";
+import { FileStat, FileSystem, UriSelection } from "@theia/filesystem/lib/common";
 import URI from '@theia/core/lib/common/uri';
-import {NAVIGATOR_CONTEXT_MENU, NEW_MENU_GROUP} from "@theia/navigator/lib/browser/navigator-menu";
+import { NAVIGATOR_CONTEXT_MENU, NEW_MENU_GROUP } from "@theia/navigator/lib/browser/navigator-menu";
 
 export namespace SpecCommands {
     export const NEW: Command = {
@@ -24,18 +24,22 @@ export namespace SpecCommands {
 export class SpecFrontendContribution implements CommandContribution, MenuContribution {
     protected terminalNum = 0;
 
-    constructor(@inject(FrontendApplication) protected readonly app: FrontendApplication,
-                @inject(FileSystem) protected readonly fileSystem: FileSystem,
-                @inject(SelectionService) protected readonly selectionService: SelectionService,
-                @inject(OpenerService) protected readonly openerService: OpenerService) {
+    constructor( @inject(FrontendApplication) protected readonly app: FrontendApplication,
+        @inject(FileSystem) protected readonly fileSystem: FileSystem,
+        @inject(SelectionService) protected readonly selectionService: SelectionService,
+        @inject(OpenerService) protected readonly openerService: OpenerService) {
     }
 
     registerMenus(menus: MenuModelRegistry): void {
         menus.registerMenuAction(FileMenus.NEW_GROUP, {
-            commandId: SpecCommands.NEW.id
+            commandId: SpecCommands.NEW.id,
+            label: SpecCommands.NEW.label,
+            order: '0_new_spec'
         });
         menus.registerMenuAction([NAVIGATOR_CONTEXT_MENU, NEW_MENU_GROUP], {
-            commandId: SpecCommands.NEW.id
+            commandId: SpecCommands.NEW.id,
+            label: SpecCommands.NEW.label,
+            order: '0_new_spec'
         });
 
     }
@@ -68,15 +72,13 @@ export class SpecFrontendContribution implements CommandContribution, MenuContri
                 dialog.open().then(name => {
                     const fileUri = parentUri.resolve(name);
                     this.fileSystem.createFile(fileUri.toString()).then(() => {
-                        this.fileSystem.getFileStat(fileUri.toString()).then( fileStat => {
-                            const content = "Specification Heading\n" +
-                                "=====================\n" +
+                        this.fileSystem.getFileStat(fileUri.toString()).then(fileStat => {
+                            const content = "# Specification Heading\n" +
                                 "\n" +
                                 "This is an executable specification file which follows markdown syntax.\n" +
                                 "Every heading in this file denotes a scenario. Every bulleted point denotes a step.\n" +
                                 "\n" +
-                                "Scenario Heading\n" +
-                                "----------------";
+                                "## Scenario Heading";
                             this.fileSystem.setContent(fileStat, content).then(() => {
                                 this.openerService.getOpener(fileUri).then(o => {
                                     o.open(fileUri)
